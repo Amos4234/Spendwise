@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'InsightFlow',
+  title: 'Spendwise',
   description: 'Your smart finance tracker',
 };
 

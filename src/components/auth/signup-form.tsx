@@ -57,7 +57,7 @@ export function SignUpForm() {
     <Card>
       <CardHeader>
         <CardTitle>Create an Account</CardTitle>
-        <CardDescription>Start managing your finances with InsightFlow today.</CardDescription>
+        <CardDescription>Start managing your finances with Spendwise today.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
