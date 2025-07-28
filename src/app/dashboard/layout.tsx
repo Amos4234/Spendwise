@@ -8,6 +8,8 @@ import {
   TrendingUp,
   History,
   Wallet2,
+  Target,
+  PiggyBank,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -47,6 +49,16 @@ export default function DashboardLayout({
       href: '/dashboard/expenses',
       label: 'Add Expense',
       icon: TrendingDown,
+    },
+    {
+      href: "/dashboard/budget",
+      label: "Set Budget",
+      icon: Target,
+    },
+    {
+      href: "/dashboard/goal",
+      label: "Goal Saving",
+      icon: PiggyBank,
     },
     {
       href: '/dashboard/transactions',
