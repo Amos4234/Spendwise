@@ -55,18 +55,17 @@ export function TransactionHistory() {
   };
 
   const formatDate = (dateString: string) => {
-    // The date is now stored as 'yyyy-MM-dd', which is treated as UTC.
-    // To display it correctly in the user's local timezone for that date,
-    // we need to construct a Date object that accounts for the timezone offset.
+    // The date is stored as 'yyyy-MM-dd', which is UTC.
+    // To display it correctly, we create a new Date object from the string parts.
+    // The 'new Date(year, monthIndex, day)' constructor creates a date in the local timezone,
+    // which correctly interprets the UTC date string without shifting it.
     const [year, month, day] = dateString.split('-').map(Number);
-    // Creates a date in the user's local timezone
     const date = new Date(year, month - 1, day);
     
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      timeZone: 'UTC' // Interpret the date parts as UTC to prevent timezone shifts during formatting
     }).format(date);
   }
 

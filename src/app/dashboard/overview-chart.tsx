@@ -14,8 +14,10 @@ export function OverviewChart({ data }: OverviewChartProps) {
     const monthlyData: { [key: string]: { name: string; income: number; expense: number } } = {}
 
     data.forEach(transaction => {
-      // Dates are 'yyyy-MM-dd', which is UTC. We need to parse it correctly.
-      const date = new Date(transaction.date + 'T00:00:00');
+      // Dates are 'yyyy-MM-dd'. We parse it as a local date to avoid timezone shifts.
+      const dateParts = transaction.date.split('-').map(Number);
+      const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+
       const month = format(date, 'MMM');
       const year = date.getFullYear();
       const key = `${month} ${year}`;
