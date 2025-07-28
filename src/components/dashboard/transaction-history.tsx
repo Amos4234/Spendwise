@@ -15,16 +15,30 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
 import { Badge } from "@/components/ui/badge";
-import { mockTransactions } from "@/lib/data";
 import type { Transaction } from '@/lib/types';
+import { useTransactions } from '@/context/TransactionContext';
+import { Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export function TransactionHistory() {
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const { transactions, deleteTransaction } = useTransactions();
 
   const sortedTransactions = useMemo(() => {
-    return [...mockTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, []);
+    return [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [transactions]);
 
   const filteredTransactions = useMemo(() => {
     if (filter === 'all') {
@@ -48,6 +62,10 @@ export function TransactionHistory() {
     });
   }
 
+  const handleDelete = (id: string) => {
+    deleteTransaction(id);
+  }
+
   return (
     <Tabs defaultValue="all" onValueChange={(value) => setFilter(value as any)}>
       <TabsList>
@@ -64,6 +82,7 @@ export function TransactionHistory() {
                 <TableHead>Category</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-[50px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,6 +98,29 @@ export function TransactionHistory() {
                   <TableCell className={`text-right font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     {transaction.type === 'income' ? '+' : '-'}
                     {formatCurrency(transaction.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete this transaction.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(transaction.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}

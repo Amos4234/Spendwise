@@ -22,6 +22,7 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { DashboardHeader } from '@/components/dashboard/header';
+import { TransactionProvider } from '@/context/TransactionContext';
 
 export default function DashboardLayout({
   children,
@@ -60,46 +61,48 @@ export default function DashboardLayout({
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
-        <Sidebar>
-          <SidebarHeader>
-            <div className="flex items-center gap-2 p-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 text-primary">
-                <Leaf className="h-6 w-6" />
+    <TransactionProvider>
+      <SidebarProvider>
+        <div className="flex min-h-screen bg-background">
+          <Sidebar>
+            <SidebarHeader>
+              <div className="flex items-center gap-2 p-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 text-primary">
+                  <Leaf className="h-6 w-6" />
+                </div>
+                <span className="font-bold text-lg text-foreground">InsightFlow</span>
               </div>
-              <span className="font-bold text-lg text-foreground">InsightFlow</span>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <Link href={item.href}>
-                    <SidebarMenuButton
-                      isActive={pathname === item.href}
-                      tooltip={item.label}
-                    >
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter>
-            <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </Button>
-          </SidebarFooter>
-        </Sidebar>
-        <main className="flex-1">
-          <DashboardHeader />
-          <div className="p-4 sm:p-6">{children}</div>
-        </main>
-      </div>
-    </SidebarProvider>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <Link href={item.href}>
+                      <SidebarMenuButton
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                      >
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarContent>
+            <SidebarFooter>
+              <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </Button>
+            </SidebarFooter>
+          </Sidebar>
+          <main className="flex-1">
+            <DashboardHeader />
+            <div className="p-4 sm:p-6">{children}</div>
+          </main>
+        </div>
+      </SidebarProvider>
+    </TransactionProvider>
   );
 }

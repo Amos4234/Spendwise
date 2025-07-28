@@ -1,14 +1,16 @@
-import { mockTransactions } from "@/lib/data"
+'use client'
 import { StatCard } from "@/components/dashboard/stat-card"
 import { OverviewChart } from "@/components/dashboard/overview-chart"
 import { Wallet, TrendingUp, TrendingDown, Landmark } from "lucide-react"
+import { useTransactions } from "@/context/TransactionContext";
 
 export default function DashboardPage() {
-  const totalIncome = mockTransactions
+  const { transactions } = useTransactions();
+  const totalIncome = transactions
     .filter((t) => t.type === 'income')
     .reduce((acc, t) => acc + t.amount, 0)
 
-  const totalExpenses = mockTransactions
+  const totalExpenses = transactions
     .filter((t) => t.type === 'expense')
     .reduce((acc, t) => acc + t.amount, 0)
     
@@ -47,14 +49,14 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Transactions"
-          value={mockTransactions.length.toString()}
+          value={transactions.length.toString()}
           icon={<Wallet className="h-5 w-5 text-muted-foreground" />}
           description="Total number of transactions"
         />
       </div>
 
       <div>
-        <OverviewChart data={mockTransactions} />
+        <OverviewChart data={transactions} />
       </div>
     </div>
   )

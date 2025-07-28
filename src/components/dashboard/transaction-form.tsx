@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { incomeCategories, expenseCategories } from "@/lib/data"
+import { useTransactions } from "@/context/TransactionContext"
 
 const formSchema = z.object({
   amount: z.coerce.number().positive({ message: "Amount must be positive." }),
@@ -45,6 +46,8 @@ interface TransactionFormProps {
 
 export function TransactionForm({ type }: TransactionFormProps) {
   const { toast } = useToast()
+  const { addTransaction } = useTransactions();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,7 +58,14 @@ export function TransactionForm({ type }: TransactionFormProps) {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    addTransaction({
+        id: new Date().toISOString(),
+        type,
+        amount: values.amount,
+        category: values.category,
+        date: values.date.toISOString().split('T')[0],
+    });
+    
     toast({
       title: `${type === 'income' ? 'Income' : 'Expense'} Added`,
       description: `Successfully recorded ${type}.`,
