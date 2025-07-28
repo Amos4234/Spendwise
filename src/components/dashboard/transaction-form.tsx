@@ -3,9 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { format } from "date-fns"
+import { format, startOfDay } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-import { toZonedTime } from 'date-fns-tz';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -152,7 +151,7 @@ export function TransactionForm({ type }: TransactionFormProps) {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date > startOfDay(new Date()) || date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
