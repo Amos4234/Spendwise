@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import type { Transaction } from '@/lib/types';
 import { mockTransactions } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
-import { isThisMonth, parseISO } from 'date-fns';
+import { isThisMonth, parse } from 'date-fns';
 
 interface TransactionContextType {
   transactions: Transaction[];
@@ -36,7 +36,7 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     if (!budget) return;
     
     const monthlyExpenses = transactions
-      .filter(t => t.type === 'expense' && isThisMonth(parseISO(t.date)))
+      .filter(t => t.type === 'expense' && isThisMonth(parse(t.date, 'yyyy-MM-dd', new Date())))
       .reduce((acc, t) => acc + t.amount, 0);
 
     if (monthlyExpenses > budget) {
@@ -52,11 +52,11 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     if (!savingsGoal) return;
 
     const monthlyIncome = transactions
-      .filter(t => t.type === 'income' && isThisMonth(parseISO(t.date)))
+      .filter(t => t.type === 'income' && isThisMonth(parse(t.date, 'yyyy-MM-dd', new Date())))
       .reduce((acc, t) => acc + t.amount, 0);
     
     const monthlyExpenses = transactions
-      .filter(t => t.type === 'expense' && isThisMonth(parseISO(t.date)))
+      .filter(t => t.type === 'expense' && isThisMonth(parse(t.date, 'yyyy-MM-dd', new Date())))
       .reduce((acc, t) => acc + t.amount, 0);
     
     const monthlySavings = monthlyIncome - monthlyExpenses;

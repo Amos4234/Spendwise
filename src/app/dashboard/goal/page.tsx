@@ -14,7 +14,7 @@ export default function GoalPage() {
         </CardHeader>
         <CardContent>
           <GoalSettings />
-        </Content>
+        </CardContent>
       </Card>
     </div>
   );
