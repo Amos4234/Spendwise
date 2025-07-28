@@ -23,46 +23,65 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   const [savingsGoal, setSavingsGoal] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     try {
-      const storedTransactions = localStorage.getItem('spendwise-transactions');
-      const storedBudget = localStorage.getItem('spendwise-budget');
-      const storedSavingsGoal = localStorage.getItem('spendwise-savings-goal');
+      const user = localStorage.getItem('spendwise-currentUser');
+      if (user) {
+        setCurrentUser(JSON.parse(user));
+      }
+    } catch(e) {
+      console.error("Failed to parse current user", e)
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    try {
+      const storedTransactions = localStorage.getItem(`spendwise-transactions-${currentUser.id}`);
+      const storedBudget = localStorage.getItem(`spendwise-budget-${currentUser.id}`);
+      const storedSavingsGoal = localStorage.getItem(`spendwise-savings-goal-${currentUser.id}`);
 
       if (storedTransactions) {
         setTransactions(JSON.parse(storedTransactions));
+      } else {
+        setTransactions([]);
       }
       if (storedBudget) {
         setBudget(JSON.parse(storedBudget));
+      } else {
+        setBudget(null);
       }
       if (storedSavingsGoal) {
         setSavingsGoal(JSON.parse(storedSavingsGoal));
+      } else {
+        setSavingsGoal(null);
       }
     } catch (error) {
       console.error("Failed to load data from localStorage", error);
     } finally {
       setIsLoaded(true);
     }
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('spendwise-transactions', JSON.stringify(transactions));
+    if (isLoaded && currentUser) {
+      localStorage.setItem(`spendwise-transactions-${currentUser.id}`, JSON.stringify(transactions));
     }
-  }, [transactions, isLoaded]);
+  }, [transactions, isLoaded, currentUser]);
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('spendwise-budget', JSON.stringify(budget));
+    if (isLoaded && currentUser) {
+      localStorage.setItem(`spendwise-budget-${currentUser.id}`, JSON.stringify(budget));
     }
-  }, [budget, isLoaded]);
+  }, [budget, isLoaded, currentUser]);
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('spendwise-savings-goal', JSON.stringify(savingsGoal));
+    if (isLoaded && currentUser) {
+      localStorage.setItem(`spendwise-savings-goal-${currentUser.id}`, JSON.stringify(savingsGoal));
     }
-  }, [savingsGoal, isLoaded]);
+  }, [savingsGoal, isLoaded, currentUser]);
 
 
   const addTransaction = (transaction: Transaction) => {

@@ -44,13 +44,44 @@ export function SignUpForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-        title: "Account Created",
-        description: "Welcome! Redirecting to your dashboard...",
-    });
-    // Simulate successful signup
-    router.push("/dashboard");
+    try {
+      const storedUsers = localStorage.getItem('spendwise-users');
+      const users = storedUsers ? JSON.parse(storedUsers) : [];
+
+      const userExists = users.some((u: any) => u.email === values.email);
+
+      if (userExists) {
+        toast({
+          variant: "destructive",
+          title: "User Exists",
+          description: "An account with this email already exists.",
+        });
+        return;
+      }
+      
+      const newUser = {
+        id: new Date().toISOString(),
+        ...values
+      };
+      
+      users.push(newUser);
+      localStorage.setItem('spendwise-users', JSON.stringify(users));
+      localStorage.setItem('spendwise-currentUser', JSON.stringify(newUser));
+
+      toast({
+          title: "Account Created",
+          description: "Welcome! Redirecting to your dashboard...",
+      });
+      
+      router.push("/dashboard");
+
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Signup Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    }
   }
 
   return (

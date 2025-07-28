@@ -68,7 +68,7 @@ export default function DashboardLayout({
   ];
 
   const handleLogout = () => {
-    // In a real app, you'd clear the user's session/token here
+    localStorage.removeItem('spendwise-currentUser');
     router.push('/');
   };
 

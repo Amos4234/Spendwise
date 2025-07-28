@@ -42,13 +42,32 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Login Successful",
-      description: "Redirecting to your dashboard...",
-    });
-    // Simulate successful login
-    router.push("/dashboard");
+    try {
+      const storedUsers = localStorage.getItem('spendwise-users');
+      const users = storedUsers ? JSON.parse(storedUsers) : [];
+      const user = users.find((u: any) => u.email === values.email && u.password === values.password);
+
+      if (user) {
+        localStorage.setItem('spendwise-currentUser', JSON.stringify(user));
+        toast({
+          title: "Login Successful",
+          description: "Redirecting to your dashboard...",
+        });
+        router.push("/dashboard");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Invalid Credentials",
+          description: "Please check your email and password.",
+        });
+      }
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    }
   }
 
   return (
