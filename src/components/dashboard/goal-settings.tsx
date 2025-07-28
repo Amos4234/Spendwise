@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,9 +29,15 @@ export function GoalSettings() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      goal: savingsGoal || 0,
+      goal: 0,
     },
   })
+
+  useEffect(() => {
+    if (savingsGoal !== null) {
+      form.setValue("goal", savingsGoal);
+    }
+  }, [savingsGoal, form])
   
   function onSubmit(values: z.infer<typeof formSchema>) {
     setSavingsGoal(values.goal)

@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { Transaction } from '@/lib/types';
-import { mockTransactions } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { isThisMonth, parse } from 'date-fns';
 
@@ -19,10 +18,52 @@ interface TransactionContextType {
 const TransactionContext = createContext<TransactionContextType | undefined>(undefined);
 
 export const TransactionProvider = ({ children }: { children: ReactNode }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
-  const [budget, setBudget] = useState<number | null>(100000);
-  const [savingsGoal, setSavingsGoal] = useState<number | null>(20000);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [budget, setBudget] = useState<number | null>(null);
+  const [savingsGoal, setSavingsGoal] = useState<number | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      const storedTransactions = localStorage.getItem('spendwise-transactions');
+      const storedBudget = localStorage.getItem('spendwise-budget');
+      const storedSavingsGoal = localStorage.getItem('spendwise-savings-goal');
+
+      if (storedTransactions) {
+        setTransactions(JSON.parse(storedTransactions));
+      }
+      if (storedBudget) {
+        setBudget(JSON.parse(storedBudget));
+      }
+      if (storedSavingsGoal) {
+        setSavingsGoal(JSON.parse(storedSavingsGoal));
+      }
+    } catch (error) {
+      console.error("Failed to load data from localStorage", error);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('spendwise-transactions', JSON.stringify(transactions));
+    }
+  }, [transactions, isLoaded]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('spendwise-budget', JSON.stringify(budget));
+    }
+  }, [budget, isLoaded]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('spendwise-savings-goal', JSON.stringify(savingsGoal));
+    }
+  }, [savingsGoal, isLoaded]);
+
 
   const addTransaction = (transaction: Transaction) => {
     setTransactions(prevTransactions => [transaction, ...prevTransactions]);
@@ -33,7 +74,7 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   }
   
   useEffect(() => {
-    if (!budget) return;
+    if (!budget || !isLoaded) return;
     
     const monthlyExpenses = transactions
       .filter(t => t.type === 'expense' && isThisMonth(parse(t.date, 'yyyy-MM-dd', new Date())))
@@ -46,10 +87,10 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
         description: `You have exceeded your monthly budget of KES${budget.toLocaleString()}.`,
       });
     }
-  }, [transactions, budget, toast]);
+  }, [transactions, budget, toast, isLoaded]);
 
   useEffect(() => {
-    if (!savingsGoal) return;
+    if (!savingsGoal || !isLoaded) return;
 
     const monthlyIncome = transactions
       .filter(t => t.type === 'income' && isThisMonth(parse(t.date, 'yyyy-MM-dd', new Date())))
@@ -68,7 +109,7 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-  }, [transactions, savingsGoal, toast]);
+  }, [transactions, savingsGoal, toast, isLoaded]);
 
 
   return (

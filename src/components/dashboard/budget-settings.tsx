@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,9 +29,15 @@ export function BudgetSettings() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      budget: budget || 0,
+      budget: 0,
     },
   })
+
+  useEffect(() => {
+    if (budget !== null) {
+      form.setValue("budget", budget);
+    }
+  }, [budget, form])
   
   function onSubmit(values: z.infer<typeof formSchema>) {
     setBudget(values.budget)
