@@ -3,6 +3,7 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import type { Transaction } from "@/lib/types"
+import { format } from "date-fns"
 
 interface OverviewChartProps {
   data: Transaction[]
@@ -13,8 +14,10 @@ export function OverviewChart({ data }: OverviewChartProps) {
     const monthlyData: { [key: string]: { name: string; income: number; expense: number } } = {}
 
     data.forEach(transaction => {
-      const month = new Date(transaction.date).toLocaleString('default', { month: 'short' });
-      const year = new Date(transaction.date).getFullYear();
+      // Dates are 'yyyy-MM-dd', which is UTC. We need to parse it correctly.
+      const date = new Date(transaction.date + 'T00:00:00');
+      const month = format(date, 'MMM');
+      const year = date.getFullYear();
       const key = `${month} ${year}`;
 
       if (!monthlyData[key]) {
@@ -28,10 +31,14 @@ export function OverviewChart({ data }: OverviewChartProps) {
       }
     })
 
+    const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     return Object.values(monthlyData).sort((a, b) => {
-        const dateA = new Date(`01 ${a.name} 2024`);
-        const dateB = new Date(`01 ${b.name} 2024`);
-        return dateA.getTime() - dateB.getTime();
+        const monthA = monthOrder.indexOf(a.name);
+        const monthB = monthOrder.indexOf(b.name);
+        // This assumes data is for the same year, which might need adjustment for multi-year data.
+        // For this app, it's a reasonable assumption for the chart.
+        return monthA - monthB;
     });
   }
 

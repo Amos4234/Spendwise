@@ -3,8 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { format } from "date-fns"
+import { format, toDate } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -58,12 +59,15 @@ export function TransactionForm({ type }: TransactionFormProps) {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // Prevent timezone shifts.
+    const utcDate = zonedTimeToUtc(values.date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+
     addTransaction({
         id: new Date().toISOString(),
         type,
         amount: values.amount,
         category: values.category,
-        date: values.date.toISOString().split('T')[0],
+        date: format(utcDate, 'yyyy-MM-dd'),
     });
     
     toast({
