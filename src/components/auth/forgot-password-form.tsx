@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,15 +22,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export function LoginForm() {
+export function ForgotPasswordForm() {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -38,7 +38,6 @@ export function LoginForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
@@ -46,26 +45,27 @@ export function LoginForm() {
     try {
       const storedUsers = localStorage.getItem('spendwise-users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
-      const user = users.find((u: any) => u.email === values.email && u.password === values.password);
+      const userExists = users.some((u: any) => u.email === values.email);
 
-      if (user) {
-        localStorage.setItem('spendwise-currentUser', JSON.stringify(user));
+      if (userExists) {
+        // In a real app, you'd send an email. Here, we'll just show a toast.
+        const verificationCode = Math.floor(100000 + Math.random() * 900000);
         toast({
-          title: "Login Successful",
-          description: "Redirecting to your dashboard...",
+          title: "Password Reset Sent",
+          description: `A reset link has been sent to your email. Your verification code is ${verificationCode}`,
         });
-        router.push("/dashboard");
+        router.push("/");
       } else {
         toast({
           variant: "destructive",
-          title: "Invalid Credentials",
-          description: "Please check your email and password.",
+          title: "User Not Found",
+          description: "No account found with that email address.",
         });
       }
     } catch (error) {
        toast({
         variant: "destructive",
-        title: "Login Failed",
+        title: "Request Failed",
         description: "An unexpected error occurred. Please try again.",
       });
     }
@@ -74,12 +74,14 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome Back</CardTitle>
-        <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
+        <CardTitle>Forgot Password</CardTitle>
+        <CardDescription>
+          Enter your email and we'll send you a link to reset your password.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
@@ -93,33 +95,17 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <div className="flex justify-end">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
             <Button type="submit" className="w-full">
-              Sign In
+              Send Reset Link
             </Button>
           </form>
         </Form>
       </CardContent>
+      <CardFooter className="justify-center">
+         <Button variant="link" asChild>
+            <Link href="/">Back to Login</Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
