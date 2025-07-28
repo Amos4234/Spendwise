@@ -90,7 +90,7 @@ export function TransactionForm({ type }: TransactionFormProps) {
               <FormControl>
                 <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">KES</span>
-                    <Input type="number" placeholder="0.00" className="pl-10" {...field} />
+                    <Input type="number" placeholder="0.00" className="pl-12" {...field} />
                 </div>
               </FormControl>
               <FormMessage />
