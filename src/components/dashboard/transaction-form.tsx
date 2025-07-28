@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-import { fromZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -59,16 +59,13 @@ export function TransactionForm({ type }: TransactionFormProps) {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Prevent timezone shifts by converting the local date to a UTC date
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const utcDate = fromZonedTime(values.date, timeZone);
-
+    // Dates are selected in the local timezone. We format it directly to avoid shifts.
     addTransaction({
         id: new Date().toISOString(),
         type,
         amount: values.amount,
         category: values.category,
-        date: format(utcDate, 'yyyy-MM-dd'),
+        date: format(values.date, 'yyyy-MM-dd'),
     });
     
     toast({
@@ -92,8 +89,8 @@ export function TransactionForm({ type }: TransactionFormProps) {
               <FormLabel>Amount</FormLabel>
               <FormControl>
                 <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">$</span>
-                    <Input type="number" placeholder="0.00" className="pl-7" {...field} />
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">KES</span>
+                    <Input type="number" placeholder="0.00" className="pl-10" {...field} />
                 </div>
               </FormControl>
               <FormMessage />

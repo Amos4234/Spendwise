@@ -67,7 +67,7 @@ export function OverviewChart({ data }: OverviewChartProps) {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) => `KES${value}`}
             />
             <Tooltip
               contentStyle={{
@@ -76,6 +76,7 @@ export function OverviewChart({ data }: OverviewChartProps) {
                 borderRadius: 'var(--radius)',
               }}
               cursor={{ fill: 'hsl(var(--accent))' }}
+              formatter={(value: number) => `KES${value.toLocaleString()}`}
             />
             <Legend />
             <Bar dataKey="income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />

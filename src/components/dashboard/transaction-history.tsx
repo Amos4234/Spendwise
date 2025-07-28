@@ -48,19 +48,15 @@ export function TransactionHistory() {
   }, [filter, sortedTransactions]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
+    return `KES${amount.toLocaleString('en-US')}`;
   };
 
   const formatDate = (dateString: string) => {
-    // The date is stored as 'yyyy-MM-dd', which is UTC.
-    // To display it correctly, we create a new Date object from the string parts.
-    // The 'new Date(year, monthIndex, day)' constructor creates a date in the local timezone,
-    // which correctly interprets the UTC date string without shifting it.
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
+    // The date is stored as 'yyyy-MM-dd'.
+    // To display it correctly in the user's local timezone without shifting,
+    // we parse it as a local date by splitting the string.
+    const dateParts = dateString.split('-').map(Number);
+    const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',

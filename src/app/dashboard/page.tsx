@@ -1,6 +1,6 @@
 'use client'
 import { StatCard } from "@/components/dashboard/stat-card"
-import { OverviewChart } from "@/components/dashboard/overview-chart"
+import { OverviewChart } from "./overview-chart"
 import { Wallet, TrendingUp, TrendingDown, Landmark } from "lucide-react"
 import { useTransactions } from "@/context/TransactionContext";
 
@@ -17,10 +17,7 @@ export default function DashboardPage() {
   const balance = totalIncome - totalExpenses
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
+    return `KES${amount.toLocaleString('en-US')}`;
   };
 
 
