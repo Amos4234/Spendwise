@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Add this line to disable the Next.js DevTools
+  devIndicators: false,
 };
 
 export default nextConfig;

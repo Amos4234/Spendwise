@@ -79,8 +79,8 @@ export function OverviewChart({ data }: OverviewChartProps) {
               formatter={(value: number) => `KES${value.toLocaleString()}`}
             />
             <Legend />
-            <Bar dataKey="income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="expense" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="income" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="expense" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
